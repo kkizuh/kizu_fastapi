@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: kizu-db
+    environment:
+      POSTGRES_DB: kizu
+      POSTGRES_USER: kizuuser
+      POSTGRES_PASSWORD: kizupass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: .
+    container_name: kizu-api
+    depends_on:
+      - db
+    environment:
+      - DB_URL=postgresql://kizuuser:kizupass@db:5432/kizu
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./app:/app
+    restart: unless-stopped
+
+volumes:
+  pgdata:
