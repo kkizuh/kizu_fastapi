@@ -5,7 +5,7 @@ from schemas import RegisterRequest, LoginRequest, TokenResponse
 from auth import get_db, create_token, hash_password, verify_password
 from transactions import router as transactions_router
 from sqlalchemy.orm import Session
-from app.main import app
+
 
 app = FastAPI()
 Base.metadata.create_all(bind=engine)
