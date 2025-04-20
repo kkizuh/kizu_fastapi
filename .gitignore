@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches
+.pytest_cache/
+.cache/
+*.log
+
+# Environments
+.env
+.venv/
+venv/
+env/
+ENV/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+
+# PyInstaller
+build/
+dist/
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+test-results/
+
+# Docker
+*.pid
+*.pid.lock
+docker-compose.override.yml
+
+# Database
+*.db
+*.sqlite3
+
+# OS generated
+.DS_Store
+Thumbs.db
