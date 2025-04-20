@@ -25,7 +25,6 @@
 | База данных      | PostgreSQL (в Docker)        |
 | Авторизация      | JWT (OAuth2PasswordBearer)   |
 | Безопасность     | Bcrypt (хэширование паролей) |
-| Тестирование     | pytest, httpx *(опционально)*|
 | Docker           | docker-compose               |
 
 ---
@@ -41,7 +40,6 @@ kizu_fastapi/
 │   ├── models.py            # ORM-модели
 │   ├── schemas.py           # Pydantic-схемы
 │   ├── transactions.py      # Роуты транзакций
-│   └── tests/               # Юнит-тесты
 ├── .env                     # Секреты (не коммитить)
 ├── Dockerfile
 ├── docker-compose.yml
