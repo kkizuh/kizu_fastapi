@@ -22,8 +22,11 @@ if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY is not set in .env!")
 
 # FastAPI OAuth2 схема
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/login",
+    scheme_name="JWT"
+)
+    
 # Исключение на случай некорректного токена
 credentials_exception = HTTPException(
     status_code=401,

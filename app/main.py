@@ -6,8 +6,21 @@ from auth import get_db, create_token, hash_password, verify_password
 from transactions import router as transactions_router
 from sqlalchemy.orm import Session
 
+app = FastAPI(
+    title="🏦 KizuFinTech API",
+    description="""
+📱 API для мобильного приложения по учёту личных финансов.
 
-app = FastAPI()
+🔐 Поддержка JWT-авторизации  
+💰 Управление транзакциями  
+🧑‍💻 Админ-функции  
+""",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
+# Подключение роутов с тэгами
+app.include_router(transactions_router, tags=["💸 Транзакции"])
 Base.metadata.create_all(bind=engine)
 
 @app.post("/register", response_model=TokenResponse)

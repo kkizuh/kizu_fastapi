@@ -10,41 +10,60 @@ router = APIRouter()
 
 # ✅ Добавить транзакцию
 @router.post("/transactions")
-def add_transaction(data: TransactionCreate, db: Session = Depends(get_db), user=Depends(get_current_user)):
-    db_trx = Transaction(user_id=user.id, **data.dict())
-    db.add(db_trx)
+def create_transaction(data: TransactionCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    new_transaction = Transaction(
+        title=data.title,
+        amount=data.amount,
+        type=data.type,
+        date=data.date,
+        user_id=user.id
+    )
+
+    categories = db.query(Category).filter(Category.id.in_(data.category_ids)).all()
+    new_transaction.categories = categories
+
+    db.add(new_transaction)
     db.commit()
-    return {"message": "Transaction added"}
+    db.refresh(new_transaction)
+    return new_transaction
 
 
 
 # ✅ Получить свои транзакции
-@router.get("/transactions")
-def get_transactions(db: Session = Depends(get_db), user=Depends(get_current_user)):
-    trx = db.query(Transaction).filter(Transaction.user_id == user.id).all()
-    return [
-        {
-            "id": t.id,
-            "title": t.title,
-            "amount": t.amount,
-            "type": t.type,
-            "category": t.category,
-            "date": t.date
-        }
-        for t in trx
-    ]
+@router.post("/transactions")
+def create_transaction(data: TransactionCreate, db: Session = Depends(get_db), user: User = Depends(get_current_user)):
+    new_transaction = Transaction(
+        title=data.title,
+        amount=data.amount,
+        type=data.type,
+        date=data.date,
+        user_id=user.id
+    )
+
+    categories = db.query(Category).filter(Category.id.in_(data.category_ids)).all()
+    new_transaction.categories = categories
+
+    db.add(new_transaction)
+    db.commit()
+    db.refresh(new_transaction)
+    return new_transaction
 
 
 
 # ✅ Удалить свою транзакцию по ID
 @router.delete("/transactions/{transaction_id}")
 def delete_transaction(transaction_id: int, db: Session = Depends(get_db), user=Depends(get_current_user)):
-    trx = db.query(Transaction).filter(Transaction.id == transaction_id, Transaction.user_id == user.id).first()
-    if not trx:
-        raise HTTPException(status_code=404, detail="Transaction not found")
-    db.delete(trx)
+    transaction = db.query(Transaction).filter(
+        Transaction.id == transaction_id,
+        Transaction.user_id == user.id
+    ).first()
+
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Транзакция не найдена или не принадлежит вам")
+
+    db.delete(transaction)
     db.commit()
-    return {"message": "Transaction deleted"}
+    return {"message": "Транзакция успешно удалена"}
 
 
 # 🔍 Админ: получить всех пользователей
