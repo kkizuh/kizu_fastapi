@@ -1,20 +1,43 @@
-from pydantic import BaseModel, Field
-from typing import List, Literal
-from datetime import date
+from enum import Enum
+from datetime import datetime
+from typing import List, Optional
 
-# 📦 Регистрация
+from pydantic import BaseModel, EmailStr, Field, ConfigDict 
+
+
+class TransactionType(str, Enum):
+    INCOME  = "income"
+    EXPENSE = "expense"
+
+
+# ------------ auth -------------
 class RegisterRequest(BaseModel):
-    username: str = Field(..., example="ivan123", description="Имя пользователя (логин)")
-    email:    str = Field(..., example="ivan@example.com", description="Электронная почта")
-    name:     str = Field(..., example="Иван Иванов", description="Отображаемое имя")
-    password: str = Field(..., example="supersecure123", description="Пароль (не менее 6 символов)")
+    username: str = Field(..., example="ivan123", description="Логин")
+    email:    str = Field(..., example="ivan@example.com", description="E-mail")
+    name:     str = Field(..., example="Иван Иванов", description="Имя")
+    password: str = Field(..., min_length=6, example="secret123", description="Пароль")
 
-# 🔐 Вход
+
 class LoginRequest(BaseModel):
-    username: str = Field(..., example="ivan123", description="Имя пользователя")
-    password: str = Field(..., example="supersecure123", description="Пароль")
+    username: str = Field(..., example="ivan123")
+    password: str = Field(..., example="secret123")
 
-# 🔐 Ответ при авторизации
+class UserOut(BaseModel):
+    id:       int
+    username: str
+    email:    str
+    name:     str
+
+    model_config = ConfigDict(from_attributes=True)
+
+class UserUpdate(BaseModel):
+    email: Optional[str] = None
+    name:  Optional[str]      = None
+
+class PasswordUpdate(BaseModel):
+    old_password: str = Field(..., min_length=6)
+    new_password: str = Field(..., min_length=6)
+
 class TokenResponse(BaseModel):
     id:       int
     token:    str
@@ -22,39 +45,47 @@ class TokenResponse(BaseModel):
     email:    str
     name:     str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)   # заменяет orm_mode
 
-# 📚 Категория (вывод)
+
+# ------------ categories -------------
 class CategoryOut(BaseModel):
     id:   int
     name: str
-    type: Literal["income", "expense"]
+    type: TransactionType
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
-# 💸 Создание транзакции
+
+# ------------ transactions -------------
 class TransactionCreate(BaseModel):
-    title:   str                 = Field(..., example="Покупка кофе")
-    amount:  float               = Field(..., example=250.0)
-    type_:   Literal["income", "expense"] = Field(..., alias="type", description="income или expense")
-    category_ids: List[int]      = Field(..., example=[1,2], description="Список ID категорий")
-    date:    date                = Field(..., example="2025-04-20")
+    title:            str             = Field(..., example="Кофе")
+    amount:           float           = Field(..., example=150.0)
+    transaction_type: TransactionType = Field(..., example=TransactionType.EXPENSE)
+    category_ids:     List[int]       = Field(..., example=[1, 2])
+    date: datetime = Field(..., example="2025-04-26T15:45:00Z")
 
-    class Config:
-        from_attributes    = True   # вместо orm_mode
-        populate_by_name   = True   # чтобы Pydantic понимал alias="type"
 
-# 💸 Вывод транзакции
 class TransactionOut(BaseModel):
-    id:        int
-    title:     str
-    amount:    float
-    type_:     Literal["income", "expense"] = Field(..., alias="type")
-    date:      date
+    id:   int
+    title: str
+    amount: float
+    transaction_type: TransactionType = Field(alias="type")
+
+    date: datetime
     categories: List[CategoryOut]
 
-    class Config:
-        from_attributes    = True
-        populate_by_name   = True
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+class TransactionUpdate(BaseModel):
+    """Все поля опциональны — можно прислать только то, что меняем"""
+    title:            Optional[str]             = Field(None, example="Обед")
+    amount:           Optional[float]           = Field(None, example=300.0)
+    transaction_type: Optional[TransactionType] = Field(None, example=TransactionType.INCOME)
+    category_ids:     Optional[List[int]]       = Field(None, example=[3])
+    date:             Optional[datetime]        = Field(None, example="2025-04-26T15:12:00")
+
+class BalanceResponse(BaseModel):
+    income:  float
+    expense: float
+    total:   float

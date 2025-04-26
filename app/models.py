@@ -1,4 +1,13 @@
-from sqlalchemy import Table, Column, Integer, String, Float, ForeignKey, Date
+from sqlalchemy import (
+    Table,
+    Column,
+    Integer,
+    String,
+    Float,
+    ForeignKey,
+    DateTime,
+    func
+)
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -32,7 +41,7 @@ class Transaction(Base):
     title = Column(String)
     amount = Column(Float)
     type = Column(String)
-    date = Column(Date)
+    date     = Column(DateTime(timezone=True), server_default=func.now())
     user_id = Column(Integer, ForeignKey("users.id"))
 
     categories = relationship("Category", secondary=transaction_categories, backref="transactions")
