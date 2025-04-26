@@ -11,10 +11,17 @@ from categories import router as categories_router
 
 app = FastAPI(
     title="🏦 KizuFinTech API",
-    description="API для учёта личных финансов",
+    description="""
+    <b>API для учёта личных финансов</b><br>
+    Используйте этот API для управления транзакциями, профилем и категориями расходов.
+    """,
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    license_info={
+        "name": "MIT License",
+        "url": "https://opensource.org/licenses/MIT",
+    },
 )
 
 app.include_router(transactions_router, tags=["💸 Транзакции"])
