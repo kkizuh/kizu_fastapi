@@ -1,12 +1,13 @@
 from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import OAuth2PasswordRequestForm
 from database import Base, engine
 from models import User
 from schemas import LoginRequest, RegisterRequest, TokenResponse
 from auth import get_current_user, get_db, create_token, hash_password, verify_password
 from transactions import router as transactions_router
 from sqlalchemy.orm import Session
-from users import router as user_router 
+from users import router as user_router
+from categories import router as categories_router
+
 
 app = FastAPI(
     title="🏦 KizuFinTech API",
@@ -17,7 +18,8 @@ app = FastAPI(
 )
 
 app.include_router(transactions_router, tags=["💸 Транзакции"])
-app.include_router(user_router,  tags=["Профиль"])   
+app.include_router(user_router,  tags=["Профиль"]) 
+app.include_router(categories_router)  
 Base.metadata.create_all(bind=engine)
 
 @app.get("/healthz")
@@ -51,7 +53,7 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     )
 
 @app.post("/login", response_model=TokenResponse, tags=["auth"])
-def login(data: LoginRequest, db: Session = Depends(get_db)):   # <-- data, не format!
+def login(data: LoginRequest, db: Session = Depends(get_db)):
     """
     Принимает **application/json**:
     {
