@@ -71,7 +71,7 @@ class TransactionCreate(BaseModel):
     title:            str             = Field(..., example="Кофе")
     amount:           float           = Field(..., example=150.0)
     transaction_type: TransactionType = Field(..., example=TransactionType.EXPENSE)
-    category_ids:     List[CategoryOut]       = Field(..., example=[1, 2])
+    category_ids:     List[int]       = Field(..., example=[1, 2])
     date: datetime = Field(..., example="2025-04-26T15:45:00Z")
 
 
