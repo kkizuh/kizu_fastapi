@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from database import Base, engine
 from models import User
 from schemas import LoginRequest, RegisterRequest, TokenResponse
-from auth import get_current_user, get_db, create_token, hash_password, verify_password
+from auth import get_db, create_token, hash_password, verify_password
 from transactions import router as transactions_router
 from sqlalchemy.orm import Session
 from users import router as user_router

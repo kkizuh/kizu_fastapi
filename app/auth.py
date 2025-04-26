@@ -47,7 +47,7 @@ def create_token(user: User):
     data = {
         "sub": user.username,
         "id": user.id,
-        "exp": datetime.utcnow() + timedelta(days=7)
+        "exp": datetime.utcnow() + timedelta(days=os.getenv("TOKEN_EXPIRE_DAYS"))
     }
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
