@@ -11,22 +11,35 @@ from categories import router as categories_router
 
 app = FastAPI(
     title="🏦 KizuFinTech API",
-    description="API для учёта личных финансов",
-    version="1.0.0",
+    description="""
+    Добро пожаловать в KizuFinTech API — приватный API для управления личными финансами.
+    
+    Этот API предоставляет возможности для:
+    - Управления транзакциями (добавление, удаление, обновление и просмотр).
+    - Управления профилем пользователя (регистрация, авторизация, обновление данных).
+    - Управления категориями расходов (создание, редактирование, удаление категорий).
+
+    Пожалуйста, обратите внимание, что данный API является приватным и предназначен только для использования авторизованными пользователями.
+    """,
+    version="1.0.1",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    license_info={
+        "name": "MIT License",
+        "url": "https://opensource.org/licenses/MIT",
+    }
 )
 
-app.include_router(transactions_router, tags=["💸 Транзакции"])
-app.include_router(user_router,  tags=["Профиль"]) 
-app.include_router(categories_router)  
+app.include_router(transactions_router, prefix="/transactions", tags=["💸 Транзакции"])
+app.include_router(user_router, prefix="/users", tags=["👤 Профиль"])
+app.include_router(categories_router, prefix="/categories", tags=["📚 Категории"])
 Base.metadata.create_all(bind=engine)
 
 @app.get("/healthz")
 def healthz():
     return {"status": "ok"}
 
-@app.post("/register", response_model=TokenResponse)
+@app.post("/register", response_model=TokenResponse, tags=["auth"])
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == data.username).first():
         raise HTTPException(status_code=400, detail="Username already taken")

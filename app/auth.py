@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
@@ -17,6 +17,7 @@ load_dotenv()
 # Конфигурация
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM", "HS256")
+TOKEN_EXPIRE_DAYS: int = int(os.getenv("TOKEN_EXPIRE_DAYS", 3))
 
 if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY is not set in .env!")
@@ -43,13 +44,15 @@ def get_db():
         db.close()
 
 # Генерация JWT токена
-def create_token(user: User):
-    data = {
+def create_token(user: User) -> str:
+    expires_at = datetime.now(timezone.utc) + timedelta(days=TOKEN_EXPIRE_DAYS)
+
+    payload = {
         "sub": user.username,
-        "id": user.id,
-        "exp": datetime.utcnow() + timedelta(days=os.getenv("TOKEN_EXPIRE_DAYS"))
+        "id":  user.id,
+        "exp": expires_at,
     }
-    return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
 
 # Получение текущего пользователя из токена
 def get_current_user(

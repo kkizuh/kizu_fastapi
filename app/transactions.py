@@ -29,7 +29,14 @@ def create_transaction(
     db.add(new_trx)
     db.commit()
     db.refresh(new_trx)
-    return new_trx
+    return {
+        "id":       new_trx.id,
+        "title":    new_trx.title,
+        "amount":   new_trx.amount,
+        "type":     new_trx.type,
+        "date":     new_trx.date,
+        "categories": [c.id for c in new_trx.categories]
+    }
 
 @router.get("/transactions", response_model=List[TransactionOut])
 def list_transactions(
