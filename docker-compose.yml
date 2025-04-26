@@ -15,17 +15,14 @@ services:
 
   backend:
     build: .
-    env_file:
-      - .env 
     container_name: kizu-api
     depends_on:
       - db
-    environment:
-      - DB_URL=postgresql://kizuuser:kizupass@db:5432/kizu
+    env_file: .env          # 👉 достаточно, DB_URL тут не нужен
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app
+      - ./app:/app          # можно закомментировать в production
     restart: unless-stopped
 
 volumes:

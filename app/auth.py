@@ -22,8 +22,11 @@ if not SECRET_KEY:
     raise RuntimeError("SECRET_KEY is not set in .env!")
 
 # FastAPI OAuth2 схема
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="/login",
+    scheme_name="JWT"
+)
+    
 # Исключение на случай некорректного токена
 credentials_exception = HTTPException(
     status_code=401,
@@ -44,7 +47,7 @@ def create_token(user: User):
     data = {
         "sub": user.username,
         "id": user.id,
-        "exp": datetime.utcnow() + timedelta(days=3)
+        "exp": datetime.utcnow() + timedelta(days=os.getenv("TOKEN_EXPIRE_DAYS"))
     }
     return jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
 
