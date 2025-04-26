@@ -30,9 +30,9 @@ app = FastAPI(
     }
 )
 
-app.include_router(transactions_router, prefix="/transactions", tags=["💸 Транзакции"])
+app.include_router(transactions_router, tags=["💸 Транзакции"])
 app.include_router(user_router, prefix="/users", tags=["👤 Профиль"])
-app.include_router(categories_router, prefix="/categories", tags=["📚 Категории"])
+app.include_router(categories_router, tags=["📚 Категории"])
 Base.metadata.create_all(bind=engine)
 
 @app.get("/healthz")
