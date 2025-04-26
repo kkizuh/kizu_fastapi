@@ -6,8 +6,7 @@ from auth     import get_db, get_current_user
 from models   import Category, User, transaction_categories
 from schemas  import CategoryOut, CategoryCreate, CategoryUpdate
 
-router = APIRouter(prefix="/categories", tags=["📚 Категории"])
-
+router = APIRouter(tags=["📚 Категории"], prefix="/categories")
 
 @router.get("", response_model=list[CategoryOut])
 def list_categories(order: str = "id",
