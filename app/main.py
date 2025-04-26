@@ -8,27 +8,22 @@ from sqlalchemy.orm import Session
 
 app = FastAPI(
     title="🏦 KizuFinTech API",
-    description="""
-📱 API для мобильного приложения по учёту личных финансов.
-
-🔐 Поддержка JWT-авторизации  
-💰 Управление транзакциями  
-🧑‍💻 Админ-функции  
-""",
+    description="API для учёта личных финансов",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
 )
-# Подключение роутов с тэгами
+
 app.include_router(transactions_router, tags=["💸 Транзакции"])
 Base.metadata.create_all(bind=engine)
 
 @app.post("/register", response_model=TokenResponse)
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == data.username).first():
-        raise HTTPException(status_code=400, detail="Username taken")
+        raise HTTPException(status_code=400, detail="Username already taken")
     if db.query(User).filter(User.email == data.email).first():
-        raise HTTPException(status_code=400, detail="Email taken")
+        raise HTTPException(status_code=400, detail="Email already registered")
+
     user = User(
         username=data.username,
         email=data.email,
@@ -37,6 +32,8 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
     )
     db.add(user)
     db.commit()
+    db.refresh(user)
+
     token = create_token(user)
     return TokenResponse(
         id=user.id,
@@ -51,6 +48,7 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == data.username).first()
     if not user or not verify_password(data.password, user.password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
+
     token = create_token(user)
     return TokenResponse(
         id=user.id,
@@ -59,5 +57,3 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         email=user.email,
         name=user.name
     )
-
-app.include_router(transactions_router)
