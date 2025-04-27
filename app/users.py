@@ -5,7 +5,7 @@ from auth import get_current_user, get_db, hash_password, verify_password
 from models import User
 from schemas import TokenResponse, UserOut, UserUpdate, PasswordUpdate
 
-router = APIRouter(prefix="/me", tags=["🙋‍♂️ Me"])
+router = APIRouter(prefix="/me", tags=["👤 Профиль"])
 
 # GET /me
 @router.get("", response_model=UserOut)
