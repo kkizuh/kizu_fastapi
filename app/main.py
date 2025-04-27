@@ -30,16 +30,10 @@ app = FastAPI(
     }
 )
 
-app.include_router(transactions_router, tags=["💸 Транзакции"])
-app.include_router(user_router, prefix="/users", tags=["👤 Профиль"])
-app.include_router(categories_router, tags=["📚 Категории"])
 Base.metadata.create_all(bind=engine)
 
-@app.get("/healthz")
-def healthz():
-    return {"status": "ok"}
 
-@app.post("/register", response_model=TokenResponse, tags=["auth"])
+@app.post("/register", response_model=TokenResponse, tags=["👤 Профиль"])
 def register(data: RegisterRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.username == data.username).first():
         raise HTTPException(status_code=400, detail="Username already taken")
@@ -65,7 +59,7 @@ def register(data: RegisterRequest, db: Session = Depends(get_db)):
         name=user.name
     )
 
-@app.post("/login", response_model=TokenResponse, tags=["auth"])
+@app.post("/login", response_model=TokenResponse, tags=["👤 Профиль"])
 def login(data: LoginRequest, db: Session = Depends(get_db)):
     """
     Принимает **application/json**:
@@ -88,3 +82,9 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
         name=user.name,
     )
 
+app.include_router(user_router, prefix="/users", tags=["👤 Профиль"])
+app.include_router(transactions_router, tags=["💸 Транзакции"])
+app.include_router(categories_router, tags=["📚 Категории"])
+@app.get("/healthz")
+def healthz():
+    return {"status": "ok"}
