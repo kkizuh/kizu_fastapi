@@ -14,7 +14,7 @@ def me(user: User = Depends(get_current_user)):
     return user
 
 # PATCH /me
-@router.patch("", response_model=TokenResponse)
+@router.patch("", response_model=UserOut)
 def update_me(
     data: UserUpdate,
     db: Session = Depends(get_db),

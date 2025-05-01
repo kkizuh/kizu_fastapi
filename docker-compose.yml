@@ -18,11 +18,11 @@ services:
     container_name: kizu-api
     depends_on:
       - db
-    env_file: .env          # 👉 достаточно, DB_URL тут не нужен
+    env_file: .env          
     ports:
       - "8000:8000"
     volumes:
-      - ./app:/app          # можно закомментировать в production
+      - ./app:/app          
     restart: unless-stopped
 
 volumes:
