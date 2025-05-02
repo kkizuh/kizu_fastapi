@@ -85,9 +85,16 @@
             cats = db.query(Category).filter(Category.id.in_(data.category_ids)).all()
             trx.categories = cats
 
-        db.commit()
-        db.refresh(trx)
-        return trx
+            db.commit()
+            db.refresh(trx)
+            return {
+                "id":       trx.id,
+                "title":    trx.title,
+                "amount":   trx.amount,
+                "transaction_type": trx.type,
+                "date":     trx.date,
+                "categories": [c.id for c in trx.categories]  # 💥 this is essential!
+            }
 
     @router.delete("/transactions/{trx_id}")
     def delete_transaction(
