@@ -52,18 +52,18 @@ kizu_fastapi/
 
 ## 📂 Переменные окружения
 
-Скопируйте `.env.example` → `.env` и отредактируйте:
+Создайте `.env` и отредактируйте:
 
 ```env
-# PostgreSQL
-POSTGRES_DB=kizu
+# База
 POSTGRES_USER=kizuuser
 POSTGRES_PASSWORD=kizupass
-DB_HOST=db
+DB_HOST=db       
 DB_PORT=5432
+DB_NAME=kizu
 
-# JWT
-SECRET_KEY=change-me
+# Auth
+SECRET_KEY=supersecret123
 ALGORITHM=HS256
 TOKEN_EXPIRE_DAYS=3
 ```
