@@ -22,7 +22,7 @@ class LoginRequest(BaseModel):
     password: str = Field(..., example="secret123")
 
 # Me
- 
+
 class UserOut(BaseModel):
     id:       int
     username: str
@@ -46,7 +46,7 @@ class TokenResponse(BaseModel):
     email:    str
     name:     str
 
-    model_config = ConfigDict(from_attributes=True)  
+    model_config = ConfigDict(from_attributes=True)
 # ------------ categories -------------
 class CategoryOut(BaseModel):
     id:   int
@@ -58,7 +58,7 @@ class CategoryOut(BaseModel):
 class CategoryCreate(BaseModel):
     name: str            = Field(..., example="Еда")
     type: TransactionType = Field(..., example=TransactionType.EXPENSE)
-    
+
 class CategoryUpdate(BaseModel):
     name: Optional[str]            = Field(None, example="Транспорт")
     type: Optional[TransactionType] = Field(None, example=TransactionType.EXPENSE)
